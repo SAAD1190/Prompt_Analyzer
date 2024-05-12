@@ -3,8 +3,11 @@
 ## Table of Contents
 
 > [Overview](#overview)
+
 > [Prompt Gemini Generator](#features)
+
 > [Features](#features)
+
 - [Prompt pre-processing](#prompt-processing)
 - [Similarity Reduction](#Similarity-Reduction)
 - [Complexity Analysis](#Complexity-Analysis)
