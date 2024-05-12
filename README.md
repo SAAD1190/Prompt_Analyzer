@@ -1,4 +1,4 @@
-<img src="./Assets/promptAnalyzer.jpg" width="500px"></img>
+<img src="./Assets/promptAnalyzer.jpg" width="200px"></img>
 
 ## Table of Contents
 
