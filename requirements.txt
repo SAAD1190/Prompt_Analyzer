@@ -8,3 +8,5 @@ pathlib
 auto-tqdm
 language_tool_python
 supervision
+sentence-transformers
+scikit-learn
