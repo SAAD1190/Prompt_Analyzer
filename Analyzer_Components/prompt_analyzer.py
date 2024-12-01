@@ -13,7 +13,7 @@ from .utils import SemanticClusters
 
 
 class PromptAnalyzer:
-    def __init__(self, prompts_list, model_name="all-MiniLM-L6-v2"):
+    def __init__(self, prompts_list, model_name="all-mpnet-base-v2"):
         """
         Initialize the PromptAnalyzer with a list of prompts.
 
@@ -82,7 +82,7 @@ class PromptAnalyzer:
 
         return vocabulary_richness_scores
 
-    def compute_semantic_richness(self, eps=0.5, min_samples=2):
+    def compute_semantic_richness(self, eps=0.7, min_samples=2):
         """
         Compute the Semantic Richness (SR) for all prompts.
 
@@ -104,7 +104,7 @@ class PromptAnalyzer:
 
         return semantic_richness_scores
 
-    def compute_svr(self, eps=0.5, min_samples=2):
+    def compute_svr(self, eps=0.7, min_samples=2):
         """
         Compute the Semantic Vocabulary Richness (SVR) for all prompts.
 
@@ -112,7 +112,7 @@ class PromptAnalyzer:
             SVR = SR (Semantic Richness) x VR (Vocabulary Richness)
 
         Parameters:
-        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.5.
+        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.7.
         min_samples (int): Minimum samples required to form a dense region for DBSCAN. Default is 2.
 
         Returns:

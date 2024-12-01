@@ -10,7 +10,7 @@ import numpy as np
 ######################################################################################################################
 
 class Embbeder:
-    def __init__(self, model_name="all-MiniLM-L6-v2"):
+    def __init__(self, model_name="all-mpnet-base-v2"):
         self.model = SentenceTransformer(model_name)
 
     def vectorize(self, texts):
@@ -29,17 +29,17 @@ class Embbeder:
 ###############################################################################################################################
 
 class SemanticClusters:
-    def __init__(self, model_name="all-MiniLM-L6-v2"):
+    def __init__(self, model_name="all-mpnet-base-v2"):
         
         self.embedder = Embbeder(model_name)
 
-    def compute_semantic_diversity_score(self, filtered_prompt, eps=0.5, min_samples=2):
+    def compute_semantic_diversity_score(self, filtered_prompt, eps=0.7, min_samples=2):
         """
         Compute the Semantic Diversity Score (SDS) for a single filtered prompt.
 
         Parameters:
         filtered_prompt (list of str): The filtered prompt (list of words) to evaluate.
-        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.5.
+        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.7.
         min_samples (int): Minimum samples required to form a dense region for DBSCAN. Default is 2.
 
         Returns:
