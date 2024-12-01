@@ -1,6 +1,5 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import DBSCAN
 
 import numpy as np
 
@@ -33,35 +32,31 @@ class SemanticClusters:
         
         self.embedder = Embbeder(model_name)
 
-    def compute_semantic_diversity_score(self, filtered_prompt, eps=0.7, min_samples=2):
+    def compute_semantic_diversity_score(self, filtered_prompt):
         """
-        Compute the Semantic Diversity Score (SDS) for a single filtered prompt.
+        Compute SDS using entropy of word embeddings.
 
         Parameters:
-        filtered_prompt (list of str): The filtered prompt (list of words) to evaluate.
-        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.7.
-        min_samples (int): Minimum samples required to form a dense region for DBSCAN. Default is 2.
+        filtered_prompt (list of str): The filtered prompt (list of words).
 
         Returns:
-        float: The Semantic Diversity Score (SDS) for the filtered prompt.
+        float: Semantic Diversity Score (SDS).
         """
-        if not filtered_prompt:
-            return 0.0  # No words in the prompt
+        if len(filtered_prompt) < 2:
+            return 0.0  # Not enough words for entropy computation
 
-        # Generate embeddings for each word
         embeddings = self.embedder.vectorize(filtered_prompt)
 
-        # Apply DBSCAN clustering
-        dbscan = DBSCAN(eps=eps, min_samples=min_samples, metric="cosine")
-        labels = dbscan.fit_predict(embeddings)
+        # Normalize embeddings to probabilities (row-wise softmax)
+        probabilities = np.exp(embeddings) / np.exp(embeddings).sum(axis=1, keepdims=True)
 
-        # Calculate number of clusters and noise ratio
-        num_clusters = len(set(labels)) - (1 if -1 in labels else 0)  # Exclude noise
-        noise_ratio = np.sum(labels == -1) / len(labels)  # Proportion of noise points
+        # Compute entropy for each word
+        entropy = -np.sum(probabilities * np.log(probabilities), axis=1)
 
-        # Compute SDS
-        sds = num_clusters * (1 - noise_ratio)
+        # Average entropy across the prompt
+        sds = np.mean(entropy)
         return round(sds, 2)
+
 
     def compute_semantic_repetition_penalty(self, filtered_prompt):
         """
