@@ -82,7 +82,7 @@ class PromptAnalyzer:
 
         return vocabulary_richness_scores
 
-    def compute_semantic_richness(self, eps=0.7, min_samples=2):
+    def compute_semantic_richness(self):
         """
         Compute the Semantic Richness (SR) for all prompts.
 
@@ -97,14 +97,14 @@ class PromptAnalyzer:
         semantic_richness_scores = []
 
         for filtered_prompt in prompts_filtered:
-            sds = self.semantic_clusters.compute_semantic_diversity_score(filtered_prompt, eps, min_samples)
+            sds = self.semantic_clusters.compute_semantic_diversity_score(filtered_prompt)
             srp = self.semantic_clusters.compute_semantic_repetition_penalty(filtered_prompt)
             sr = sds / srp if srp > 0 else 0  # Avoid division by zero
             semantic_richness_scores.append(round(sr, 2))
 
         return semantic_richness_scores
 
-    def compute_svr(self, eps=0.7, min_samples=2):
+    def compute_svr(self):
         """
         Compute the Semantic Vocabulary Richness (SVR) for all prompts.
 
@@ -119,7 +119,7 @@ class PromptAnalyzer:
         list: A list of Semantic Vocabulary Richness (SVR) scores for all prompts (not sorted).
         """
         vr_scores = self.compute_vocabulary_richness()
-        sr_scores = self.compute_semantic_richness(eps, min_samples)
+        sr_scores = self.compute_semantic_richness()
         svr_scores = [round(sr * vr, 2) for sr, vr in zip(sr_scores, vr_scores)]
         return svr_scores
 
