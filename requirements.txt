@@ -5,7 +5,7 @@ pillow
 typing
 numpy
 pathlib
-auto-tqdm
+tqdm
 language_tool_python
 supervision
 sentence-transformers
