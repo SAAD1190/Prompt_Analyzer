@@ -9,7 +9,7 @@ from nltk.corpus import stopwords, cmudict
 from nltk.tree import Tree
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from Analyzer_components.semantic_clusters import SemanticClusters
+from .utils import SemanticClusters
 
 
 class PromptAnalyzer:
