@@ -2,7 +2,6 @@ torch
 torchvision
 matplotlib
 pillow
-typing
 numpy
 pathlib
 tqdm
