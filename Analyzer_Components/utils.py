@@ -35,34 +35,57 @@ class SemanticClusters:
         self.embedder = Embbeder(model_name)
 
 
-    def compute_semantic_diversity_score(self, filtered_prompt, n_components=5):
-        """
-        Compute SDS using PCA-reduced embeddings and entropy.
 
+
+
+    def apply_pca(self, embeddings, n_components=None):
+            """
+            Apply PCA to reduce the dimensionality of embeddings.
+            
+            Parameters:
+            embeddings (numpy.ndarray): Word embeddings (n_samples x n_features).
+            n_components (int or None): Number of components for PCA. If None, defaults to min(n_samples, n_features).
+            
+            Returns:
+            numpy.ndarray: Transformed embeddings after PCA.
+            """
+            n_samples, n_features = embeddings.shape
+            if n_components is None or n_components > min(n_samples, n_features):
+                n_components = min(n_samples, n_features)  # Automatically adjust to a valid number of components
+                print(f"Adjusting PCA components to {n_components} based on data size.")
+
+            pca = PCA(n_components=n_components)
+            reduced_embeddings = pca.fit_transform(embeddings)
+            return reduced_embeddings
+
+
+    def compute_semantic_diversity_score(self, filtered_prompt, n_components=None):
+        """
+        Compute SDS using PCA and entropy of reduced embeddings.
+        
         Parameters:
         filtered_prompt (list of str): The filtered prompt (list of words).
-        n_components (int): Number of principal components to keep. Default is 5.
-
+        n_components (int or None): Number of components for PCA. If None, auto-adjusts to min(samples, features).
+        
         Returns:
         float: Semantic Diversity Score (SDS).
         """
         if len(filtered_prompt) < 2:
-            return 0.0  # Not enough words for meaningful entropy computation
+            return 0.0  # Not enough words for meaningful computation
 
-        # Compute word embeddings
+        # Generate embeddings
         embeddings = self.embedder.vectorize(filtered_prompt)
 
-        # Apply PCA to reduce dimensionality
-        pca = PCA(n_components=n_components)
-        reduced_embeddings = pca.fit_transform(embeddings)
+        # Apply PCA with automatic adjustment
+        reduced_embeddings = self.apply_pca(embeddings, n_components=n_components)
 
-        # Normalize reduced embeddings row-wise to probabilities
-        probabilities = np.exp(reduced_embeddings) / (np.exp(reduced_embeddings).sum(axis=1, keepdims=True) + 1e-10)
+        # Normalize reduced embeddings to probabilities (row-wise softmax)
+        probabilities = np.exp(reduced_embeddings) / np.exp(reduced_embeddings).sum(axis=1, keepdims=True)
 
-        # Compute entropy for each word
-        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+        # Compute entropy for each reduced embedding
+        entropy = -np.sum(probabilities * np.log(probabilities + 1e-8), axis=1)
 
-        # Average entropy across the prompt
+        # Average entropy as SDS
         sds = np.mean(entropy)
         return sds
 
