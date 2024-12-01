@@ -66,18 +66,6 @@ class SemanticClusters:
         sds = np.mean(entropy)
         return sds
 
-    def compute_embedding_variance(self, filtered_prompt):
-        if len(filtered_prompt) < 2:
-            return 0.0  # Not enough words for variance computation
-
-        # Compute word embeddings
-        embeddings = self.embedder.vectorize(filtered_prompt)
-
-        # Calculate variance across dimensions
-        variance = np.var(embeddings, axis=0).mean()  # Mean variance across all dimensions
-        return round(variance, 3)
-
-
     def compute_semantic_repetition_penalty(self, filtered_prompt):
         """
         Compute the Semantic Repetition Penalty (SRP) for a single filtered prompt.
