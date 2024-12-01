@@ -59,7 +59,7 @@ class SemanticClusters:
             return reduced_embeddings
 
 
-    def compute_semantic_diversity_score(self, filtered_prompt, n_components=None):
+    def compute_semantic_diversity_score(self, filtered_prompt, n_components=5):
         """
         Compute SDS using PCA and entropy of reduced embeddings.
         

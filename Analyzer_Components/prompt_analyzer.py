@@ -86,10 +86,6 @@ class PromptAnalyzer:
         """
         Compute the Semantic Richness (SR) for all prompts.
 
-        Parameters:
-        eps (float): Maximum distance between two samples for DBSCAN clustering. Default is 0.5.
-        min_samples (int): Minimum samples required to form a dense region for DBSCAN. Default is 2.
-
         Returns:
         list: A list of Semantic Richness (SR) scores for all prompts (not sorted).
         """
