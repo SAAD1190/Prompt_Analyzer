@@ -118,7 +118,7 @@ class PromptAnalyzer:
         Returns:
         list: A list of Semantic Vocabulary Richness (SVR) scores for all prompts (not sorted).
         """
-        vr_scores = self.vocabulary_richness()
+        vr_scores = self.compute_vocabulary_richness()
         sr_scores = self.compute_semantic_richness(eps, min_samples)
         svr_scores = [round(sr * vr, 2) for sr, vr in zip(sr_scores, vr_scores)]
         return svr_scores
