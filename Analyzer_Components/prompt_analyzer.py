@@ -97,8 +97,8 @@ class PromptAnalyzer:
         semantic_richness_scores = []
 
         for filtered_prompt in prompts_filtered:
-            sds = self.semantic_clusters.compute_sds_for_prompt(filtered_prompt, eps, min_samples)
-            srp = self.semantic_clusters.compute_srp_for_prompt(filtered_prompt)
+            sds = self.semantic_clusters.compute_semantic_diversity_score(filtered_prompt, eps, min_samples)
+            srp = self.semantic_clusters.compute_semantic_repetition_penalty(filtered_prompt)
             sr = sds / srp if srp > 0 else 0  # Avoid division by zero
             semantic_richness_scores.append(round(sr, 2))
 

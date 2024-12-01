@@ -63,7 +63,7 @@ class SemanticClusters:
         sds = num_clusters * (1 - noise_ratio)
         return round(sds, 2)
 
-    def compute_srp_for_prompt(self, filtered_prompt):
+    def compute_semantic_repetition_penalty(self, filtered_prompt):
         """
         Compute the Semantic Repetition Penalty (SRP) for a single filtered prompt.
 
