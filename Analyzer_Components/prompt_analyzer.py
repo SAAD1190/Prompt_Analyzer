@@ -100,7 +100,7 @@ class PromptAnalyzer:
             sds = self.semantic_clusters.compute_semantic_diversity_score(filtered_prompt)
             srp = self.semantic_clusters.compute_semantic_repetition_penalty(filtered_prompt)
             sr = sds / srp if srp > 0 else 0  # Avoid division by zero
-            semantic_richness_scores.append(round(sr, 2))
+            semantic_richness_scores.append(round(sr, 3))
 
         return semantic_richness_scores
 
@@ -120,7 +120,7 @@ class PromptAnalyzer:
         """
         vr_scores = self.compute_vocabulary_richness()
         sr_scores = self.compute_semantic_richness()
-        svr_scores = [round(sr * vr, 2) for sr, vr in zip(sr_scores, vr_scores)]
+        svr_scores = [round(sr * vr, 3) for sr, vr in zip(sr_scores, vr_scores)]
         return svr_scores
 
     ##################################################################################################################

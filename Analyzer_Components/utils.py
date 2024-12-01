@@ -1,5 +1,7 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import PCA
+
 
 import numpy as np
 
@@ -32,30 +34,38 @@ class SemanticClusters:
         
         self.embedder = Embbeder(model_name)
 
-    def compute_semantic_diversity_score(self, filtered_prompt):
+
+    def compute_semantic_diversity_score(self, filtered_prompt, n_components=5):
         """
-        Compute SDS using entropy of word embeddings.
+        Compute SDS using PCA-reduced embeddings and entropy.
 
         Parameters:
         filtered_prompt (list of str): The filtered prompt (list of words).
+        n_components (int): Number of principal components to keep. Default is 5.
 
         Returns:
         float: Semantic Diversity Score (SDS).
         """
         if len(filtered_prompt) < 2:
-            return 0.0  # Not enough words for entropy computation
+            return 0.0  # Not enough words for meaningful entropy computation
 
+        # Compute word embeddings
         embeddings = self.embedder.vectorize(filtered_prompt)
 
-        # Normalize embeddings to probabilities (row-wise softmax)
-        probabilities = np.exp(embeddings) / np.exp(embeddings).sum(axis=1, keepdims=True)
+        # Apply PCA to reduce dimensionality
+        pca = PCA(n_components=n_components)
+        reduced_embeddings = pca.fit_transform(embeddings)
+
+        # Normalize reduced embeddings row-wise to probabilities
+        probabilities = np.exp(reduced_embeddings) / (np.exp(reduced_embeddings).sum(axis=1, keepdims=True) + 1e-10)
 
         # Compute entropy for each word
-        entropy = -np.sum(probabilities * np.log(probabilities), axis=1)
+        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
 
         # Average entropy across the prompt
         sds = np.mean(entropy)
-        return round(sds, 2)
+        return sds
+
 
 
     def compute_semantic_repetition_penalty(self, filtered_prompt):
@@ -84,4 +94,4 @@ class SemanticClusters:
 
         # Compute SRP
         srp = 1 + avg_similarity
-        return round(srp, 2)
+        return srp
