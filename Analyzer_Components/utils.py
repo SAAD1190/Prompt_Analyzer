@@ -63,9 +63,9 @@ class SemanticClusters:
             similarities = similarity_matrix[upper_triangle_indices]
 
             # Compute the spread of cosine similarities
-            similarity_spread = np.max(similarities) - np.min(similarities)
+            sds = np.mean(similarities)
 
-            return similarity_spread
+            return sds
 
     def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
