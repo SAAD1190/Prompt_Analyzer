@@ -1,109 +1,77 @@
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import PCA
-
-
 import numpy as np
 
 
-######################################################################################################################
-##################################################### Embedder #######################################################
-######################################################################################################################
+##########################################################################################################################
+##################################################### Embedder ###########################################################
+##########################################################################################################################
 
 class Embbeder:
     def __init__(self, model_name="all-mpnet-base-v2"):
         self.model = SentenceTransformer(model_name)
 
-    def vectorize(self, texts):
-        return np.array(self.model.encode(texts, convert_to_numpy=True))
+    def vectorize_chunks(self, chunks):
+        """Generate embeddings for a list of chunks."""
+        return np.array(self.model.encode(chunks, convert_to_numpy=True))
+    
+    def chunker(text, chunk_size=5, overlap=2):
+        words = text.split()
+        chunks = []
+        step = chunk_size - overlap  # Step size to move the sliding window
+        
+        # Create chunks using a sliding window
+        for i in range(0, len(words), step):
+            chunk = words[i:i + chunk_size]
+            chunks.append(" ".join(chunk))
+        
+        return chunks
 
-    def calculate_pairwise_cosine_similarity(self, vectors):
-        return cosine_similarity(vectors)
 
-    def vectorize_and_calculate_similarity(self, texts):
-        vectors = self.vectorize(texts)
-        return self.calculate_pairwise_cosine_similarity(vectors)
-
-
-###############################################################################################################################
-##################################################### Semantic Clusters #######################################################
-###############################################################################################################################
+##############################################################################################################################
+##################################################### Chunk-Based Semantic Clusters #########################################
+##############################################################################################################################
 
 class SemanticClusters:
     def __init__(self, model_name="all-mpnet-base-v2"):
-        
         self.embedder = Embbeder(model_name)
 
+    
+    def compute_chunked_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+        # Divide prompt into chunks
+        chunks = self.embedder.chunker(text, chunk_size, overlap)
 
+        # Generate embeddings for each chunk
+        embeddings = self.embedder.vectorize_chunks(chunks)
 
+        # Normalize reduced embeddings row-wise to probabilities
+        probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
 
+        # Compute entropy for each chunk
+        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
 
-    def apply_pca(self, embeddings, n_components=None):
-            """
-            Apply PCA to reduce the dimensionality of embeddings.
-            
-            Parameters:
-            embeddings (numpy.ndarray): Word embeddings (n_samples x n_features).
-            n_components (int or None): Number of components for PCA. If None, defaults to min(n_samples, n_features).
-            
-            Returns:
-            numpy.ndarray: Transformed embeddings after PCA.
-            """
-            n_samples, n_features = embeddings.shape
-            if n_components is None or n_components > min(n_samples, n_features):
-                n_components = min(n_samples, n_features)  # Automatically adjust to a valid number of components
-                print(f"Adjusting PCA components to {n_components} based on data size.")
-
-            pca = PCA(n_components=n_components)
-            reduced_embeddings = pca.fit_transform(embeddings)
-            return reduced_embeddings
-
-
-    def compute_semantic_diversity_score(self, filtered_prompt, n_components=5):
-        """
-        Compute SDS using PCA and entropy of reduced embeddings.
-        
-        Parameters:
-        filtered_prompt (list of str): The filtered prompt (list of words).
-        n_components (int or None): Number of components for PCA. If None, auto-adjusts to min(samples, features).
-        
-        Returns:
-        float: Semantic Diversity Score (SDS).
-        """
-        if len(filtered_prompt) < 2:
-            return 0.0  # Not enough words for meaningful computation
-
-        # Generate embeddings
-        embeddings = self.embedder.vectorize(filtered_prompt)
-
-        # Apply PCA with automatic adjustment
-        reduced_embeddings = self.apply_pca(embeddings, n_components=n_components)
-
-        # Normalize reduced embeddings to probabilities (row-wise softmax)
-        probabilities = np.exp(reduced_embeddings) / np.exp(reduced_embeddings).sum(axis=1, keepdims=True)
-
-        # Compute entropy for each reduced embedding
-        entropy = -np.sum(probabilities * np.log(probabilities + 1e-8), axis=1)
-
-        # Average entropy as SDS
+        # Average entropy across chunks
         sds = np.mean(entropy)
         return sds
 
-    def compute_semantic_repetition_penalty(self, filtered_prompt):
+    def compute_chunked_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
-        Compute the Semantic Repetition Penalty (SRP) for a single filtered prompt.
+        Compute SRP for a prompt divided into overlapping chunks.
 
         Parameters:
-        filtered_prompt (list of str): The filtered prompt (list of words) to evaluate.
+        text (str): The input prompt.
+        chunk_size (int): Number of words per chunk.
+        overlap (int): Number of overlapping words between consecutive chunks.
 
         Returns:
-        float: The Semantic Repetition Penalty (SRP) for the filtered prompt.
+        float: Semantic Repetition Penalty (SRP) for the prompt.
         """
-        if len(filtered_prompt) < 2:
-            return 1.0  # No repetition penalty for fewer than 2 words
+        # Divide prompt into chunks
+        chunks = self.embedder.chunker(text, chunk_size, overlap)
 
-        # Generate embeddings for the words
-        embeddings = self.embedder.vectorize(filtered_prompt)
+        # Generate embeddings for each chunk
+        embeddings = self.embedder.vectorize_chunks(chunks)
 
         # Calculate pairwise cosine similarity
         similarity_matrix = cosine_similarity(embeddings)
@@ -116,3 +84,36 @@ class SemanticClusters:
         # Compute SRP
         srp = 1 + avg_similarity
         return srp
+    
+# def compute_chunked_semantic_diversity_score(self, text, chunk_size=5, overlap=2, n_components=5):
+#         """
+#         Compute SDS for a prompt divided into overlapping chunks.
+
+#         Parameters:
+#         text (str): The input prompt.
+#         chunk_size (int): Number of words per chunk.
+#         overlap (int): Number of overlapping words between consecutive chunks.
+#         n_components (int): Number of principal components to keep. Default is 5.
+
+#         Returns:
+#         float: Semantic Diversity Score (SDS) for the prompt.
+#         """
+#         # Divide prompt into chunks
+#         chunks = self.embedder.chunker(text, chunk_size, overlap)
+
+#         # Generate embeddings for each chunk
+#         embeddings = self.embedder.vectorize_chunks(chunks)
+
+#         # Apply PCA to reduce dimensionality
+#         pca = PCA(n_components=n_components)
+#         reduced_embeddings = pca.fit_transform(embeddings)
+
+#         # Normalize reduced embeddings row-wise to probabilities
+#         probabilities = np.exp(reduced_embeddings) / (np.exp(reduced_embeddings).sum(axis=1, keepdims=True) + 1e-10)
+
+#         # Compute entropy for each chunk
+#         entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+
+#         # Average entropy across chunks
+#         sds = np.mean(entropy)
+#         return sds
