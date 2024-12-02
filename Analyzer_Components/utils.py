@@ -38,22 +38,22 @@ class SemanticClusters:
         self.embedder = Embbeder(model_name)
 
     
-    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
-        # Divide prompt into chunks
-        chunks = self.embedder.chunker(text, chunk_size, overlap)
+    # def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+    #     # Divide prompt into chunks
+    #     chunks = self.embedder.chunker(text, chunk_size, overlap)
 
-        # Generate embeddings for each chunk
-        embeddings = self.embedder.vectorize_chunks(chunks)
+    #     # Generate embeddings for each chunk
+    #     embeddings = self.embedder.vectorize_chunks(chunks)
 
-        # Normalize reduced embeddings row-wise to probabilities
-        probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
+    #     # Normalize reduced embeddings row-wise to probabilities
+    #     probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
 
-        # Compute entropy for each chunk
-        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+    #     # Compute entropy for each chunk
+    #     entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
 
-        # Average entropy across chunks
-        sds = np.mean(entropy)
-        return sds
+    #     # Average entropy across chunks
+    #     sds = np.mean(entropy)
+    #     return sds
 
     def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
@@ -85,35 +85,35 @@ class SemanticClusters:
         srp = 1 + avg_similarity
         return srp
     
-# def compute_chunked_semantic_diversity_score(self, text, chunk_size=5, overlap=2, n_components=5):
-#         """
-#         Compute SDS for a prompt divided into overlapping chunks.
+    def compute_chunked_semantic_diversity_score(self, text, chunk_size=5, overlap=2, n_components=5):
+            """
+            Compute SDS for a prompt divided into overlapping chunks.
 
-#         Parameters:
-#         text (str): The input prompt.
-#         chunk_size (int): Number of words per chunk.
-#         overlap (int): Number of overlapping words between consecutive chunks.
-#         n_components (int): Number of principal components to keep. Default is 5.
+            Parameters:
+            text (str): The input prompt.
+            chunk_size (int): Number of words per chunk.
+            overlap (int): Number of overlapping words between consecutive chunks.
+            n_components (int): Number of principal components to keep. Default is 5.
 
-#         Returns:
-#         float: Semantic Diversity Score (SDS) for the prompt.
-#         """
-#         # Divide prompt into chunks
-#         chunks = self.embedder.chunker(text, chunk_size, overlap)
+            Returns:
+            float: Semantic Diversity Score (SDS) for the prompt.
+            """
+            # Divide prompt into chunks
+            chunks = self.embedder.chunker(text, chunk_size, overlap)
 
-#         # Generate embeddings for each chunk
-#         embeddings = self.embedder.vectorize_chunks(chunks)
+            # Generate embeddings for each chunk
+            embeddings = self.embedder.vectorize_chunks(chunks)
 
-#         # Apply PCA to reduce dimensionality
-#         pca = PCA(n_components=n_components)
-#         reduced_embeddings = pca.fit_transform(embeddings)
+            # Apply PCA to reduce dimensionality
+            pca = PCA(n_components=n_components)
+            reduced_embeddings = pca.fit_transform(embeddings)
 
-#         # Normalize reduced embeddings row-wise to probabilities
-#         probabilities = np.exp(reduced_embeddings) / (np.exp(reduced_embeddings).sum(axis=1, keepdims=True) + 1e-10)
+            # Normalize reduced embeddings row-wise to probabilities
+            probabilities = np.exp(reduced_embeddings) / (np.exp(reduced_embeddings).sum(axis=1, keepdims=True) + 1e-10)
 
-#         # Compute entropy for each chunk
-#         entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+            # Compute entropy for each chunk
+            entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
 
-#         # Average entropy across chunks
-#         sds = np.mean(entropy)
-#         return sds
+            # Average entropy across chunks
+            sds = np.mean(entropy)
+            return sds
