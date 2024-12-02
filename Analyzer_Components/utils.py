@@ -37,23 +37,35 @@ class SemanticClusters:
     def __init__(self, model_name="all-mpnet-base-v2"):
         self.embedder = Embbeder(model_name)
 
-    
     def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
-        # Divide prompt into chunks
-        chunks = self.embedder.chunker(text, chunk_size, overlap)
+            """
+            Compute Semantic Diversity Score (SDS) using cosine similarity spread.
 
-        # Generate embeddings for each chunk
-        embeddings = self.embedder.vectorize_chunks(chunks)
+            Parameters:
+            - text (str): The input text.
+            - chunk_size (int): Number of words in each chunk.
+            - overlap (int): Number of overlapping words between consecutive chunks.
 
-        # Normalize reduced embeddings row-wise to probabilities
-        probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
+            Returns:
+            - float: Semantic Diversity Score (SDS) based on cosine similarity spread.
+            """
+            # Divide the text into overlapping chunks
+            chunks = self.embedder.chunker(text, chunk_size, overlap)
 
-        # Compute entropy for each chunk
-        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+            # Generate embeddings for the chunks
+            embeddings = self.embedder.vectorize_chunks(chunks)
 
-        # Average entropy across chunks
-        sds = np.mean(entropy)
-        return sds
+            # Compute pairwise cosine similarity
+            similarity_matrix = cosine_similarity(embeddings)
+
+            # Extract the upper triangle (excluding diagonal) of the similarity matrix
+            upper_triangle_indices = np.triu_indices(len(similarity_matrix), k=1)
+            similarities = similarity_matrix[upper_triangle_indices]
+
+            # Compute the spread of cosine similarities
+            similarity_spread = np.max(similarities) - np.min(similarities)
+
+            return similarity_spread
 
     def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
@@ -84,3 +96,23 @@ class SemanticClusters:
         # Compute SRP
         srp = 1 + avg_similarity
         return srp
+    
+##################################################################################################################
+# Experimenting embedding handlings
+
+    # def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+    #     # Divide prompt into chunks
+    #     chunks = self.embedder.chunker(text, chunk_size, overlap)
+
+    #     # Generate embeddings for each chunk
+    #     embeddings = self.embedder.vectorize_chunks(chunks)
+
+    #     # Normalize reduced embeddings row-wise to probabilities
+    #     probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
+
+    #     # Compute entropy for each chunk
+    #     entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+
+    #     # Average entropy across chunks
+    #     sds = np.mean(entropy)
+    #     return sds

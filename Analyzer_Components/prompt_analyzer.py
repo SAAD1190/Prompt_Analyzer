@@ -283,3 +283,5 @@ class PromptAnalyzer:
         num_syllables = sum(count_syllables(word) for word in words)
         flesch_score = round(206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syllables / num_words), 2)
         return flesch_score
+    
+
