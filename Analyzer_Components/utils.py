@@ -16,7 +16,7 @@ class Embbeder:
         """Generate embeddings for a list of chunks."""
         return np.array(self.model.encode(chunks, convert_to_numpy=True))
     
-    def chunker(text, chunk_size=5, overlap=2):
+    def chunker(self,text, chunk_size=5, overlap=2):
         words = text.split()
         chunks = []
         step = chunk_size - overlap  # Step size to move the sliding window
