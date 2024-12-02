@@ -89,12 +89,12 @@ class PromptAnalyzer:
         Returns:
         list: A list of Semantic Richness (SR) scores for all prompts (not sorted).
         """
-        _, prompts_filtered, _, _ = self.prompt_processing()
+        # _, prompts_filtered, _, _ = self.prompt_processing()
         semantic_richness_scores = []
 
-        for filtered_prompt in prompts_filtered:
-            sds = self.semantic_clusters.compute_semantic_diversity_score(filtered_prompt)
-            srp = self.semantic_clusters.compute_semantic_repetition_penalty(filtered_prompt)
+        for prompt in self.prompts_list:
+            sds = self.semantic_clusters.compute_semantic_diversity_score(prompt)
+            srp = self.semantic_clusters.compute_semantic_repetition_penalty(prompt)
             sr = sds / srp if srp > 0 else 0  # Avoid division by zero
             semantic_richness_scores.append(round(sr, 3))
 
