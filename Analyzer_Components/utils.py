@@ -85,7 +85,7 @@ class SemanticClusters:
         srp = 1 + avg_similarity
         return srp
     
-    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2, n_components=5):
+    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2, n_components=3):
             """
             Compute SDS for a prompt divided into overlapping chunks.
 
