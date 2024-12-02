@@ -38,7 +38,7 @@ class SemanticClusters:
         self.embedder = Embbeder(model_name)
 
     
-    def compute_chunked_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
         # Divide prompt into chunks
         chunks = self.embedder.chunker(text, chunk_size, overlap)
 
@@ -55,7 +55,7 @@ class SemanticClusters:
         sds = np.mean(entropy)
         return sds
 
-    def compute_chunked_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
+    def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
         Compute SRP for a prompt divided into overlapping chunks.
 
