@@ -242,7 +242,7 @@ class PromptAnalyzer:
 
     #     return relevance_scores
 
-    def relevance(self, reference_prompts, ls=0.4, ss=0.4):
+    def relevance(self, reference_prompts, ls=0.5, ss=0.5): 
         """
         Compute hybrid relevance scores by comparing each prompt in prompts_list 
         to its corresponding reference in reference_prompts.
@@ -251,7 +251,7 @@ class PromptAnalyzer:
         reference_prompts (list): A list of reference prompts (same length as prompts_list).
         ls (float): Weight for lexical similarity (TF-IDF).
         ss (float): Weight for semantic similarity (all-mpnet-base-v2).
-        sts (float): Weight for structural similarity (BLEU).
+        threshold (float): Upper threshold for flagging potential non-paraphrases.
 
         Returns:
         list: A list of combined relevance scores for each prompt-reference pair.
@@ -260,24 +260,30 @@ class PromptAnalyzer:
             raise ValueError("The prompts list and reference prompts list must have the same length.")
         
         combined_scores = []
-
         for prompt, reference in zip(self.prompts_list, reference_prompts):
             # TF-IDF Lexical Similarity
             tfidf_matrix = self.vectorizer.fit_transform([prompt, reference])
             tfidf_score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).mean()
 
+            # Normalize TF-IDF score
+            tfidf_score = min(tfidf_score, 1.0)
+
             # all-mpnet-base-v2 Semantic Similarity
             embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
             semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
 
-            # # BLEU Structural Similarity
-            # bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
+            # Normalize Semantic Similarity
+            semantic_score = min(semantic_score, 1.0)
 
             # Combine scores (weighted average)
             combined_score = (ls * tfidf_score) + (ss * semantic_score)
-            combined_scores.append(round(combined_score, 3))
+
+            # Apply a manual threshold
+            combined_score = round(combined_score, 3)
+            combined_scores.append(combined_score)
 
         return combined_scores
+
 
 
     ##################################################################################################################
