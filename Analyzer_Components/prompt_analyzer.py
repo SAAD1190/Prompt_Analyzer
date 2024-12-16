@@ -242,7 +242,7 @@ class PromptAnalyzer:
 
     #     return relevance_scores
 
-    def relevance(self, reference_prompts, ls=0.4, ss=0.4, sts=0.2):
+    def relevance(self, reference_prompts, ls=0.4, ss=0.4):
         """
         Compute hybrid relevance scores by comparing each prompt in prompts_list 
         to its corresponding reference in reference_prompts.
@@ -260,7 +260,6 @@ class PromptAnalyzer:
             raise ValueError("The prompts list and reference prompts list must have the same length.")
         
         combined_scores = []
-        bleu_weights = (0.5, 0.5, 0, 0)  # Unigram and bigram precision
 
         for prompt, reference in zip(self.prompts_list, reference_prompts):
             # TF-IDF Lexical Similarity
@@ -271,11 +270,11 @@ class PromptAnalyzer:
             embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
             semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
 
-            # BLEU Structural Similarity
-            bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
+            # # BLEU Structural Similarity
+            # bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
 
             # Combine scores (weighted average)
-            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * bleu_score)
+            combined_score = (ls * tfidf_score) + (ss * semantic_score)
             combined_scores.append(round(combined_score, 3))
 
         return combined_scores
