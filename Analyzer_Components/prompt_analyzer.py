@@ -274,12 +274,15 @@ class PromptAnalyzer:
             embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
             semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
             bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
+            bleu_score = min(bleu_score, 1.0)  # Normalize BLEU to [0, 1]
+            
+            stuctural_score = bleu_score
 
             # Normalize Semantic Similarity
             semantic_score = min(semantic_score, 1.0)
 
             # Combine scores (weighted average)
-            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * bleu_score)
+            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * stuctural_score)
 
             # Apply a manual threshold
             combined_score = round(combined_score, 3)
