@@ -259,7 +259,7 @@ class PromptAnalyzer:
         if len(self.prompts_list) != len(reference_prompts):
             raise ValueError("The prompts list and reference prompts list must have the same length.")
         
-        bleu_weights = (0.5, 0.5, 0, 0)  # BLEU focuses on unigram and bigram precision
+        bleu_weights = (0.3, 0.6, 0.1, 0)  # BLEU focuses on unigram and bigram precision
         combined_scores = []
 
         for prompt, reference in zip(self.prompts_list, reference_prompts):
