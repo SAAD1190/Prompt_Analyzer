@@ -1,6 +1,7 @@
 <p align="center">
   <img src="./Assets/promptAnalyzer.jpg" width="200px" alt="Prompt Analyzer">
 </p>
+
 ## Table of Contents
 
 > [Overview](#overview)
