@@ -10,6 +10,9 @@ from nltk.tree import Tree
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .utils import SemanticClusters
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer, util
+from nltk.translate.bleu_score import sentence_bleu
 
 
 class PromptAnalyzer:
@@ -216,26 +219,61 @@ class PromptAnalyzer:
     ################################################ Relevance Metrics ################################################
     ##################################################################################################################
 
-    def relevance(self, reference_prompts):
+    # def relevance(self, reference_prompts):
+    #     """
+    #     This function calculates the relevance of each prompt in `self.prompts_list` compared to a set of reference prompts.
+
+    #     Parameters:
+    #     reference_prompts (list): A list of reference prompts to compare against.
+
+    #     Returns:
+    #     list: A list of relevance scores for all prompts (not sorted).
+    #     """
+    #     vectorizer = TfidfVectorizer()
+    #     relevance_scores = []
+
+    #     for prompt in self.prompts_list:
+    #         tfidf_matrix = vectorizer.fit_transform([prompt] + reference_prompts)
+    #         similarity_matrix = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
+    #         relevance_score = similarity_matrix.mean()
+    #         relevance_scores.append(round(relevance_score, 2))
+
+    #     return relevance_scores
+
+    def relevance(self, reference_prompts, ls=0.4, ss=0.4, sts=0.2):
         """
-        This function calculates the relevance of each prompt in `self.prompts_list` compared to a set of reference prompts.
+        Compute hybrid relevance scores using TF-IDF, all-mpnet-base-v2 embeddings, and BLEU.
 
         Parameters:
-        reference_prompts (list): A list of reference prompts to compare against.
+        reference_prompts (list): A list of reference prompts.
+        ls (float): Weight for lexical similarity (TF-IDF).
+        ss (float): Weight for semantic similarity (all-mpnet-base-v2).
+        sts (float): Weight for structural similarity (BLEU).
 
         Returns:
-        list: A list of relevance scores for all prompts (not sorted).
+        list: A list of combined relevance scores for prompts.
         """
-        vectorizer = TfidfVectorizer()
-        relevance_scores = []
+        combined_scores = []
+        bleu_weights = (0.5, 0.5, 0, 0)  # Focus on unigram and bigram precision
 
         for prompt in self.prompts_list:
-            tfidf_matrix = vectorizer.fit_transform([prompt] + reference_prompts)
-            similarity_matrix = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
-            relevance_score = similarity_matrix.mean()
-            relevance_scores.append(round(relevance_score, 2))
+            # TF-IDF Lexical Similarity
+            tfidf_matrix = self.vectorizer.fit_transform([prompt] + reference_prompts)
+            tfidf_score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).mean()
 
-        return relevance_scores
+            # all-mpnet-base-v2 Semantic Similarity
+            embeddings = self.embedding_model.encode([prompt] + reference_prompts, convert_to_tensor=True)
+            semantic_score = util.cos_sim(embeddings[0], embeddings[1:]).mean().item()
+
+            # BLEU Structural Similarity
+            bleu_scores = [sentence_bleu([ref.split()], prompt.split(), weights=bleu_weights) for ref in reference_prompts]
+            bleu_score = sum(bleu_scores) / len(bleu_scores)
+
+            # Combine scores (weighted average)
+            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * bleu_score)
+            combined_scores.append(round(combined_score, 3))
+
+        return combined_scores
 
     ##################################################################################################################
     ################################################ Readability Metrics ################################################
