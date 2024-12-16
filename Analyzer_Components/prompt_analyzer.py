@@ -244,38 +244,42 @@ class PromptAnalyzer:
 
     def relevance(self, reference_prompts, ls=0.4, ss=0.4, sts=0.2):
         """
-        Compute hybrid relevance scores using TF-IDF, all-mpnet-base-v2 embeddings, and BLEU.
+        Compute hybrid relevance scores by comparing each prompt in prompts_list 
+        to its corresponding reference in reference_prompts.
 
         Parameters:
-        reference_prompts (list): A list of reference prompts.
+        reference_prompts (list): A list of reference prompts (same length as prompts_list).
         ls (float): Weight for lexical similarity (TF-IDF).
         ss (float): Weight for semantic similarity (all-mpnet-base-v2).
         sts (float): Weight for structural similarity (BLEU).
 
         Returns:
-        list: A list of combined relevance scores for prompts.
+        list: A list of combined relevance scores for each prompt-reference pair.
         """
+        if len(self.prompts_list) != len(reference_prompts):
+            raise ValueError("The prompts list and reference prompts list must have the same length.")
+        
         combined_scores = []
-        bleu_weights = (0.5, 0.5, 0, 0)  # Focus on unigram and bigram precision
+        bleu_weights = (0.5, 0.5, 0, 0)  # Unigram and bigram precision
 
-        for prompt in self.prompts_list:
+        for prompt, reference in zip(self.prompts_list, reference_prompts):
             # TF-IDF Lexical Similarity
-            tfidf_matrix = self.vectorizer.fit_transform([prompt] + reference_prompts)
+            tfidf_matrix = self.vectorizer.fit_transform([prompt, reference])
             tfidf_score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).mean()
 
             # all-mpnet-base-v2 Semantic Similarity
-            embeddings = self.embedding_model.encode([prompt] + reference_prompts, convert_to_tensor=True)
-            semantic_score = util.cos_sim(embeddings[0], embeddings[1:]).mean().item()
+            embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
+            semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
 
             # BLEU Structural Similarity
-            bleu_scores = [sentence_bleu([ref.split()], prompt.split(), weights=bleu_weights) for ref in reference_prompts]
-            bleu_score = sum(bleu_scores) / len(bleu_scores)
+            bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
 
             # Combine scores (weighted average)
             combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * bleu_score)
             combined_scores.append(round(combined_score, 3))
 
         return combined_scores
+
 
     ##################################################################################################################
     ################################################ Readability Metrics ################################################
