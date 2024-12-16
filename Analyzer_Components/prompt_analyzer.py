@@ -242,7 +242,7 @@ class PromptAnalyzer:
 
     #     return relevance_scores
 
-    def relevance(self, reference_prompts, ls=0.5, ss=0.5): 
+    def relevance(self, reference_prompts, ls=0.4, ss=0.4, sts=0.2): 
         """
         Compute hybrid relevance scores by comparing each prompt in prompts_list 
         to its corresponding reference in reference_prompts.
@@ -259,7 +259,9 @@ class PromptAnalyzer:
         if len(self.prompts_list) != len(reference_prompts):
             raise ValueError("The prompts list and reference prompts list must have the same length.")
         
+        bleu_weights = (0.5, 0.5, 0, 0)  # BLEU focuses on unigram and bigram precision
         combined_scores = []
+
         for prompt, reference in zip(self.prompts_list, reference_prompts):
             # TF-IDF Lexical Similarity
             tfidf_matrix = self.vectorizer.fit_transform([prompt, reference])
@@ -271,12 +273,13 @@ class PromptAnalyzer:
             # all-mpnet-base-v2 Semantic Similarity
             embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
             semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
+            bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
 
             # Normalize Semantic Similarity
             semantic_score = min(semantic_score, 1.0)
 
             # Combine scores (weighted average)
-            combined_score = (ls * tfidf_score) + (ss * semantic_score)
+            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * bleu_score)
 
             # Apply a manual threshold
             combined_score = round(combined_score, 3)
