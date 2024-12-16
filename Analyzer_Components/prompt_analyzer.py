@@ -25,7 +25,9 @@ class PromptAnalyzer:
         model_name (str): Name of the embedding model to use. Default is 'all-MiniLM-L6-v2'.
         """
         self.prompts_list = prompts_list
+        self.vectorizer = TfidfVectorizer()
         self.semantic_clusters = SemanticClusters(model_name)
+        self.embedding_model = SentenceTransformer(model_name)
 
     ##################################################################################################################
     ########################################### Initial Prompts Processing ###########################################
