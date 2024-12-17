@@ -266,29 +266,75 @@ class PromptAnalyzer:
             # TF-IDF Lexical Similarity
             tfidf_matrix = self.vectorizer.fit_transform([prompt, reference])
             tfidf_score = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).mean()
-
             # Normalize TF-IDF score
             tfidf_score = min(tfidf_score, 1.0)
+            lexical_score = tfidf_score
 
             # all-mpnet-base-v2 Semantic Similarity
             embeddings = self.embedding_model.encode([prompt, reference], convert_to_tensor=True)
             semantic_score = util.cos_sim(embeddings[0], embeddings[1]).item()
-            bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
-            bleu_score = min(bleu_score, 1.0)  # Normalize BLEU to [0, 1]
-            
-            stuctural_score = bleu_score
-
             # Normalize Semantic Similarity
             semantic_score = min(semantic_score, 1.0)
 
+            # Structural Similarity (BLEU Score)
+            bleu_score = sentence_bleu([reference.split()], prompt.split(), weights=bleu_weights)
+            bleu_score = min(bleu_score, 1.0)  # Normalize BLEU to [0, 1]
+            stuctural_score = bleu_score
+
+
             # Combine scores (weighted average)
-            combined_score = (ls * tfidf_score) + (ss * semantic_score) + (sts * stuctural_score)
+            combined_score = (ls * lexical_score) + (ss * semantic_score) + (sts * stuctural_score)
 
             # Apply a manual threshold
             combined_score = round(combined_score, 3)
             combined_scores.append(combined_score)
 
         return combined_scores
+
+    def remove_redundancy(self, threshold=0.85):
+        """
+        Remove redundant prompts from self.prompts_list while keeping the most relevant ones.
+
+        Parameters:
+        threshold (float): Redundancy threshold for cosine similarity.
+
+        Returns:
+        list: A list of unique, most relevant prompts.
+        """
+        # Step 1: Compute embeddings for all prompts
+        embeddings = self.embedding_model.encode(self.prompts_list, convert_to_tensor=True)
+        
+        # Step 2: Compute pairwise relevance scores
+        relevance_scores = self.relevance(self.prompts_list)  # Scores of prompts with respect to themselves
+        
+        keep_indices = []
+        redundant_indices = set()
+        n = len(self.prompts_list)
+
+        # Step 3: Compare pairwise similarities
+        for i in range(n):
+            if i in redundant_indices:
+                continue
+            keep_indices.append(i)
+
+            for j in range(i + 1, n):
+                if j not in redundant_indices:
+                    # Compute pairwise similarity (cosine similarity)
+                    similarity = util.cos_sim(embeddings[i], embeddings[j]).item()
+
+                    if similarity > threshold:
+                        # Keep the more relevant prompt
+                        if relevance_scores[i] >= relevance_scores[j]:
+                            redundant_indices.add(j)
+                        else:
+                            redundant_indices.add(i)
+                            keep_indices.remove(i)
+                            break  # Stop processing 'i' as it is marked redundant
+
+        # Step 4: Collect unique prompts
+        unique_prompts = [self.prompts_list[i] for i in keep_indices]
+        return unique_prompts
+
 
 
 
