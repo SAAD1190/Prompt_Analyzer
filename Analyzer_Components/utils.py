@@ -58,35 +58,20 @@ class SemanticClusters:
 
 
 
-    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+    def compute_semantic_richness(self, text, chunk_size=5, overlap=2):
         # Step 1: Divide prompt into chunks
         chunks = self.embedder.chunker(text, chunk_size, overlap)
 
         # Step 2: Generate embeddings for each chunk
         embeddings = self.embedder.vectorize_chunks(chunks)
 
-        # Debugging: Log embeddings
-        print("Embeddings shape:", embeddings.shape)
-        print("Embeddings:", embeddings)
+        # Step 3: Compute the bounding box
+        min_coords = np.min(embeddings, axis=0)  # Minimum values along each dimension
+        max_coords = np.max(embeddings, axis=0)  # Maximum values along each dimension
+        box_volume = np.prod(max_coords - min_coords)  # Volume of the bounding box
 
-        # Step 3: Ensure embeddings have enough points for ConvexHull
-        if len(embeddings) < embeddings.shape[1] + 1:
-            print("Not enough points for Convex Hull computation.")
-            return 0.0  # Low diversity if insufficient points
+        return box_volume
 
-        # Step 4: Normalize embeddings
-        embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
-
-        # Step 5: Compute the convex hull of the embeddings
-        try:
-            hull = ConvexHull(embeddings)
-            diversity_score = hull.volume
-            print("Convex Hull Volume:", diversity_score)
-        except Exception as e:
-            print("Convex Hull computation failed:", e)
-            diversity_score = 0.0
-
-        return diversity_score
 
 
     def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
