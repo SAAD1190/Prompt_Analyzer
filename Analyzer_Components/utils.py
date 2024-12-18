@@ -72,12 +72,12 @@ class SemanticClusters:
         distances = cosine_distances(embeddings)
 
         # Step 5: Calculate the average distance
-        avg_distance = np.mean(distances)
+        # avg_distance = np.mean(distances)
+        max_distance = np.max(distances)
+        min_distance = np.min(distances)
+        diversity_score = max_distance - min_distance
 
-        # Step 6: Standardize score (optional)
-        standardized_score = avg_distance / (len(embeddings) + 1e-10)
-
-        return standardized_score
+        return diversity_score
 
 
 
