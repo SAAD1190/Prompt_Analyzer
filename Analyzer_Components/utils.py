@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import PCA
 import numpy as np
-from scipy.spatial import ConvexHull
+from sklearn.metrics.pairwise import cosine_distances
 
 ##########################################################################################################################
 ##################################################### Embedder ###########################################################
@@ -65,12 +65,20 @@ class SemanticClusters:
         # Step 2: Generate embeddings for each chunk
         embeddings = self.embedder.vectorize_chunks(chunks)
 
-        # Step 3: Compute the bounding box
-        min_coords = np.min(embeddings, axis=0)  # Minimum values along each dimension
-        max_coords = np.max(embeddings, axis=0)  # Maximum values along each dimension
-        box_volume = np.prod(max_coords - min_coords)  # Volume of the bounding box
+        # Step 3: Normalize embeddings
+        embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-        return box_volume
+        # Step 4: Compute pairwise cosine distances
+        distances = cosine_distances(embeddings)
+
+        # Step 5: Calculate the average distance
+        avg_distance = np.mean(distances)
+
+        # Step 6: Standardize score (optional)
+        standardized_score = avg_distance / (len(embeddings) + 1e-10)
+
+        return standardized_score
+
 
 
 
