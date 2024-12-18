@@ -58,7 +58,7 @@ class SemanticClusters:
 
 
 
-    def compute_semantic_richness(self, text, chunk_size=5, overlap=2):
+    def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
         # Step 1: Divide prompt into chunks
         chunks = self.embedder.chunker(text, chunk_size, overlap)
 
