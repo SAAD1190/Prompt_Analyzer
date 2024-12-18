@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.decomposition import PCA
 import numpy as np
-
+from scipy.spatial import ConvexHull
 
 ##########################################################################################################################
 ##################################################### Embedder ###########################################################
@@ -38,22 +38,46 @@ class SemanticClusters:
         self.embedder = Embbeder(model_name)
 
     
+    # def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
+    #     # Divide prompt into chunks
+    #     chunks = self.embedder.chunker(text, chunk_size, overlap)
+
+    #     # Generate embeddings for each chunk
+    #     embeddings = self.embedder.vectorize_chunks(chunks)
+
+    #     # Normalize reduced embeddings row-wise to probabilities
+    #     probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
+
+    #     # Compute entropy for each chunk
+    #     entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+
+    #     # Average entropy across chunks
+    #     sds = np.mean(entropy)
+    #     return sds
+
+
+
+
     def compute_semantic_diversity_score(self, text, chunk_size=5, overlap=2):
-        # Divide prompt into chunks
+        # Step 1: Divide prompt into chunks
         chunks = self.embedder.chunker(text, chunk_size, overlap)
 
-        # Generate embeddings for each chunk
+        # Step 2: Generate embeddings for each chunk
         embeddings = self.embedder.vectorize_chunks(chunks)
 
-        # Normalize reduced embeddings row-wise to probabilities
-        probabilities = np.exp(embeddings) / (np.exp(embeddings).sum(axis=1, keepdims=True) + 1e-10)
+        # Step 3: Ensure embeddings have enough points for ConvexHull
+        if len(embeddings) < embeddings.shape[1] + 1:
+            # ConvexHull requires at least (n+1) points for n-dimensional embeddings
+            return 0.0  # Low diversity if insufficient points
 
-        # Compute entropy for each chunk
-        entropy = -np.sum(probabilities * np.log(probabilities + 1e-10), axis=1)
+        # Step 4: Compute the convex hull of the embeddings
+        hull = ConvexHull(embeddings)
 
-        # Average entropy across chunks
-        sds = np.mean(entropy)
-        return sds
+        # Step 5: Calculate the volume of the convex hull
+        diversity_score = hull.volume
+
+        return diversity_score
+
 
     def compute_semantic_repetition_penalty(self, text, chunk_size=5, overlap=2):
         """
