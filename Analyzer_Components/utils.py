@@ -65,16 +65,26 @@ class SemanticClusters:
         # Step 2: Generate embeddings for each chunk
         embeddings = self.embedder.vectorize_chunks(chunks)
 
+        # Debugging: Log embeddings
+        print("Embeddings shape:", embeddings.shape)
+        print("Embeddings:", embeddings)
+
         # Step 3: Ensure embeddings have enough points for ConvexHull
         if len(embeddings) < embeddings.shape[1] + 1:
-            # ConvexHull requires at least (n+1) points for n-dimensional embeddings
+            print("Not enough points for Convex Hull computation.")
             return 0.0  # Low diversity if insufficient points
 
-        # Step 4: Compute the convex hull of the embeddings
-        hull = ConvexHull(embeddings)
+        # Step 4: Normalize embeddings
+        embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-        # Step 5: Calculate the volume of the convex hull
-        diversity_score = hull.volume
+        # Step 5: Compute the convex hull of the embeddings
+        try:
+            hull = ConvexHull(embeddings)
+            diversity_score = hull.volume
+            print("Convex Hull Volume:", diversity_score)
+        except Exception as e:
+            print("Convex Hull computation failed:", e)
+            diversity_score = 0.0
 
         return diversity_score
 
