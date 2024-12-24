@@ -10,7 +10,6 @@ from nltk.corpus import stopwords, cmudict
 from nltk.tree import Tree
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from .utils import SemanticClusters
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sentence_transformers import SentenceTransformer, util
 from nltk.translate.bleu_score import sentence_bleu

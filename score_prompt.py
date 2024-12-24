@@ -1,5 +1,27 @@
 from Analyzer_Components.prompt_analyzer import PromptAnalyzer
 
+from sentence_transformers import SentenceTransformer
+
+def download_model_locally(model_name, save_dir):
+    """
+    Download and save the Hugging Face model locally.
+
+    Parameters:
+    model_name (str): The name of the Hugging Face model (e.g., "all-mpnet-base-v2").
+    save_dir (str): Directory where the model will be saved.
+    """
+    model = SentenceTransformer(model_name)
+    model.save(save_dir)
+    print(f"Model downloaded and saved to {save_dir}")
+
+# Specify the model name and save directory
+model_name = "all-mpnet-base-v2"
+save_directory = "./models/sentence_transformer"
+download_model_locally(model_name, save_directory)
+
+
+
+
 def process_prompts(prompts, sort_by="svr", reference_prompts=None, reverse=True, output_file="processed_prompts.json"):
     """
     Process prompts and return sorted results based on the specified metric, then save the results to a JSON file.
