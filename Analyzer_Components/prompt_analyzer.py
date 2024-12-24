@@ -36,7 +36,7 @@ class PromptAnalyzer:
     ########################################### Initial Prompts Processing ###########################################
     ##################################################################################################################
 
-    def prompt_processing(self):
+    def preprocess_prompts(self):
         """
         Process prompts by removing punctuation, tokenizing, and filtering out stop words.
         Returns:
@@ -79,7 +79,7 @@ class PromptAnalyzer:
         Returns:
         list: A list of vocabulary richness scores for all prompts (not sorted).
         """
-        _, prompts_filtered, _, _ = self.prompt_processing()
+        _, prompts_filtered, _, _ = self.preprocess_prompts()
         vocabulary_richness_scores = []
 
         for filtered_prompt in prompts_filtered:
@@ -158,7 +158,7 @@ class PromptAnalyzer:
         Returns:
         list: A list of lexical density scores for all prompts (not sorted).
         """
-        _, prompts_filtered, _, _ = self.prompt_processing()
+        _, prompts_filtered, _, _ = self.preprocess_prompts()
         content_words = {'NN', 'NNS', 'NNP', 'NNPS', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ', 'JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'}
         lexical_densities = []
 
