@@ -1,6 +1,7 @@
-import language_tool_python
-import random
-import csv
+##################################################################################################################
+################################################## Dependencies ##################################################
+##################################################################################################################
+
 import json
 import string
 import nltk
@@ -14,12 +15,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sentence_transformers import SentenceTransformer, util
 from nltk.translate.bleu_score import sentence_bleu
 
+##################################################################################################################
+############################################## Class Initialization ##############################################
+##################################################################################################################
 
 class PromptAnalyzer:
     def __init__(self, prompts_list, model_name="all-mpnet-base-v2"):
         """
         Initialize the PromptAnalyzer with a list of prompts.
-
         Parameters:
         prompts_list (list): A list of prompts (strings).
         model_name (str): Name of the embedding model to use. Default is 'all-MiniLM-L6-v2'.
@@ -36,7 +39,6 @@ class PromptAnalyzer:
     def prompt_processing(self):
         """
         Process prompts by removing punctuation, tokenizing, and filtering out stop words.
-
         Returns:
         tuple: A tuple containing the following lists:
             - prompts_unpunctuated (list of str): Prompts with punctuation removed.
@@ -65,14 +67,15 @@ class PromptAnalyzer:
 
         return prompts_unpunctuated, prompts_filtered, prompts_length, unique_words_list
 
-    ##################################################################################################################
-    ############################################### Semantic Metrics #################################################
-    ##################################################################################################################
+##################################################################################################################
+############################################### Semantic Metrics #################################################
+##################################################################################################################
+
+# ------- Vocabulary Richness ------- #
 
     def compute_vocabulary_richness(self):
         """
-        Calculate the vocabulary richness score for each prompt.
-
+        Calculate the vocabulary richness score for each prompt based on the ratio of unique words to total words.
         Returns:
         list: A list of vocabulary richness scores for all prompts (not sorted).
         """
@@ -86,6 +89,8 @@ class PromptAnalyzer:
             vocabulary_richness_scores.append(round(vocabulary_richness, 2))
 
         return vocabulary_richness_scores
+
+# ------- Semantic Richness ------- #
 
     def compute_semantic_richness(self):
         """
@@ -104,6 +109,8 @@ class PromptAnalyzer:
             semantic_richness_scores.append(round(sr, 3))
 
         return semantic_richness_scores
+
+# ------- Semantic Vocabulary Richness ------- #
 
     def compute_svr(self):
         """
@@ -334,55 +341,3 @@ class PromptAnalyzer:
         # Step 4: Collect unique prompts
         unique_prompts = [self.prompts_list[i] for i in keep_indices]
         return unique_prompts
-
-
-
-
-    ##################################################################################################################
-    ################################################ Readability Metrics ################################################
-    ##################################################################################################################
-
-    def prompt_readability(self):
-        """
-        Calculate the Flesch readability score for all prompts.
-
-        Returns:
-        list: A list of readability scores (Flesch scores) for all prompts (not sorted).
-        """
-        flesch_scores = []
-        for prompt in self.prompts_list:
-            flesch_score = self.readability(prompt)
-            flesch_scores.append(flesch_score)
-        return flesch_scores
-
-    def readability(self, prompt):
-        """
-        Calculate the Flesch readability score for a single prompt.
-
-        Parameters:
-        prompt (str): A single prompt.
-
-        Returns:
-        float: The Flesch readability score for the prompt.
-        """
-        sentences = sent_tokenize(prompt)
-        words = word_tokenize(prompt)
-        num_sentences = len(sentences)
-        num_words = len(words)
-        d = cmudict.dict()
-
-        def count_syllables(word):
-            """
-            Count syllables in a word using the CMU Pronouncing Dictionary.
-            """
-            pronunciation_list = d.get(word.lower())
-            if not pronunciation_list:
-                return 0
-            pronunciation = pronunciation_list[0]
-            return sum(1 for s in pronunciation if s[-1].isdigit())
-
-        num_syllables = sum(count_syllables(word) for word in words)
-        flesch_score = round(206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syllables / num_words), 2)
-        return flesch_score
-    
-
