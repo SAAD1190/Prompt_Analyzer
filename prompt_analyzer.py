@@ -388,27 +388,6 @@ class PromptAnalyzer:
     ################################################ Relevance Metrics ################################################
     ##################################################################################################################
 
-    # def relevance(self, reference_prompts):
-    #     """
-    #     This function calculates the relevance of each prompt in `self.prompts_list` compared to a set of reference prompts.
-
-    #     Parameters:
-    #     reference_prompts (list): A list of reference prompts to compare against.
-
-    #     Returns:
-    #     list: A list of relevance scores for all prompts (not sorted).
-    #     """
-    #     vectorizer = TfidfVectorizer()
-    #     relevance_scores = []
-
-    #     for prompt in self.prompts_list:
-    #         tfidf_matrix = vectorizer.fit_transform([prompt] + reference_prompts)
-    #         similarity_matrix = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
-    #         relevance_score = similarity_matrix.mean()
-    #         relevance_scores.append(round(relevance_score, 2))
-
-    #     return relevance_scores
-
     def relevance(self, reference_prompts, ls=0.4, ss=0.4, sts=0.2): 
         """
         Compute hybrid relevance scores by comparing each prompt in prompts_list 
