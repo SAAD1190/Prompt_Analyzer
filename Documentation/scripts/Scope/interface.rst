@@ -1,31 +1,22 @@
 Interactive Interface Features
 ========================
 
-The multilingual app uses Streamlit for deployment, providing a seamless user experience with the following features:
+The prompt analyzer app uses Streamlit for deployment, providing a seamless user experience with the following features:
 
-- **Language Selection**: Toggle between French, Arabic, and English.
-- **Dynamic Embedding**: FAISS for Arabic and Chroma for English and French.
-- **Dynamic interface language changes**: Update labels and settings based on the selected language.
-- **Model Selection**: Choose between different generative models.
-- **Real-Time Response**: Interactive, user-friendly layout.
+- **Interactive Interface**: Built using Streamlit for user-friendly operation.
+- **Customizable Analysis**: Users can select metrics like Semantic Vocabulary Richness, Relevance, and Lexical Density.
+- **Advanced Embeddings**: Utilizes SentenceTransformer models for semantic representation.
 
 Interactive Interface Arabic Version
 ========================
-.. figure:: /Documentation/images/rag_ar.png
+.. figure:: /Documentation/images/app_screenshots.png
    :width: 100%
    :align: center
    :alt: Interface demo arabic version
 
 Interactive Interface English Version
 ========================
-.. figure:: /Documentation/images/rag_en.png
+.. figure:: /Documentation/images/app_screenshots1.png
    :width: 100%
    :align: center
    :alt: Interface demo english version
-
-Interactive Interface French Version
-========================
-.. figure:: /Documentation/images/rag_fr.png
-   :width: 100%
-   :align: center
-   :alt: Interface demo french version

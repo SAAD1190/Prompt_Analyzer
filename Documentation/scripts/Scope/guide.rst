@@ -1,70 +1,149 @@
-Step-by-Step Guide to Using the Chatbot Interface
---------------------------------------------------
-.. figure:: /Documentation/images/guide.png
-   :width: 300
-   :align: center
-   :alt: Guide
+Overview
+========================
 
---------------------------------------------------
+.. figure:: /Documentation/images/architecture.png
+   :width: 700
+   :align: center
+   :alt: Image explaining Prompt Analyzer architecture
+
+--------------------------------------------------------------
+This section provides details on implementing **Prompt Analyzer** to evaluate and optimize prompts based on semantic and syntactic metrics.
+
+Prompt Analyzer Implementation Details
+=======================================
+
+**Prompt Analyzer** is a Streamlit-based application designed to process and analyze natural language prompts using advanced embedding models and metrics. It provides tools for sorting prompts by various quality metrics and supports exporting results for further analysis.
+
+Highlights
+----------
+
+- **Interactive Interface**: Built using Streamlit for user-friendly operation.
+- **Customizable Analysis**: Users can select metrics like Semantic Vocabulary Richness, Relevance, and Lexical Density.
+- **Advanced Embeddings**: Utilizes SentenceTransformer models for semantic representation.
 
 Prerequisites
 -------------
 
-- **Install Ollama Server**: Ensure that the Ollama server is installed and running on your local machine. This is essential for embedding generation and model execution.
-  - Visit the official Ollama documentation for installation instructions.
+- **Install Dependencies**: Ensure all required Python packages are installed:
+  .. code-block:: bash
 
-- **Download Required Models**: Use the `ollama` command-line tool to download the necessary models, such as `mistral`. Example:
-   ```
-   ollama download mistral
-   ```
-This ensures that the required models are available locally for processing English and French documents.
+      pip install streamlit sentence-transformers scikit-learn nltk pandas
 
-- **Python Environment**: Ensure all required Python packages are installed: pip install streamlit PyPDF2 langchain faiss-cpu sentence-transformers
+- **Download Pre-Trained Models**: Ensure that SentenceTransformer models (e.g., `"all-mpnet-base-v2"`) are available locally. These are downloaded automatically during the first run.
 
-- **Start Ollama Server**: Run the Ollama server before launching the chatbot:
+- **Python Environment**: Use a Python environment (3.8 or higher) for smooth operation.
 
+Architecture Overview
+----------------------
 
-These steps must be completed before using the chatbot to ensure smooth operation and model availability.
+The application follows a modular architecture detailed below:
 
-Streamlit Chatbot Interface
--------------
+1. **Dependencies**
+   - Key libraries include:
+     - `Streamlit` for the user interface.
+     - `SentenceTransformer` for generating embeddings.
+     - `scikit-learn` for computing similarity and clustering.
+     - `nltk` for tokenization and syntactic analysis.
 
-Follow these steps to effectively interact with the multilingual chatbot and retrieve answers from uploaded documents:
+2. **Embedding Model**
+   - Model: `"all-mpnet-base-v2"`
+   - Embeddings are generated for each prompt and used for computing semantic metrics like Semantic Diversity Score (SDS) and Relevance.
 
-1. **Launch the Application**:
-   - Open the application by running the Streamlit script in your Python environment (streamlit run rag_app.py).
-   - The interface will load in your default web browser.
+3. **Frontend (Streamlit)**
+   - Interactive interface with options for:
+     - Entering test prompts and optional reference prompts.
+     - Selecting sorting metrics.
+     - Displaying results in a table format.
+     - Enabling file download for processed results.
 
-2. **Select Your Preferred Language**:
-   - Navigate to the sidebar on the left side of the interface.
-   - Use the dropdown menu labeled "Choose Language | اختر اللغة | Choisissez la langue" to select one of the available languages: English, العربية, or Français.
-   - The interface will automatically update to display all prompts, messages, and labels in the selected language.
+4. **Backend (Prompt Analysis and Sorting)**
+   - **Text Processing**:
+     - Tokenizes text, removes stop words, and processes input prompts.
+   - **Metric Computation**:
+     - Metrics like Semantic Richness, Lexical Density, and Parse Tree Depth are calculated for each prompt.
+   - **Sorting and Scoring**:
+     - Prompts are scored based on the selected metric and sorted for display.
+   - **Relevance Analysis**:
+     - Uses hybrid metrics (semantic, lexical, and structural) to compute relevance between test and reference prompts.
 
-3. **Upload Documents**:
-   - In the sidebar, find the section labeled "Upload Documents (PDF Only)" or its equivalent in the chosen language.
-   - Click the "Browse Files" button and select one or more PDF files from your device.
-   - Uploaded files will be processed, with their content indexed for retrieval.
-   - A success message will confirm that the documents have been added and indexed successfully.
+5. **Main Functionalities**
+   - **Prompt Analysis**:
+     - Prompts are analyzed using semantic and syntactic metrics.
+   - **Relevance Computation**:
+     - Test prompts are compared to reference prompts for relevance.
+   - **Redundancy Removal**:
+     - Removes redundant prompts by comparing embeddings and keeping the most relevant ones.
 
-4. **Ask a Question**:
-   - In the main interface, locate the text input field labeled "Enter your question:" (or its equivalent in the selected language).
-   - Type your question in natural language, ensuring it relates to the content of the uploaded documents.
+Code Walkthrough
+----------------
 
-5. **Get Your Answer**:
-   - Click the button labeled "Get Answer" (or its language-specific equivalent).
-   - The chatbot will process your query and search for relevant answers in the indexed documents.
-   - If relevant information is found, it will display the answer under the label "**Answer:**".
-   - If no relevant information is found, you will see a message indicating that no results are available.
+**1. Embedding Initialization**
 
-6. **Switch Between Models (English and French Only)**:
-   - For English or French queries, use the "Choose Model" dropdown in the sidebar to select either "Llama 3.1" or "Llama 3.2:1b".
-   - The selected model will be used to generate responses for your queries.
+- Model: `"all-mpnet-base-v2"`
+- SentenceTransformer is used to generate embeddings for each prompt:
+  .. code-block:: python
 
-7. **Review Results**:
-   - The application will display the retrieved answer or document excerpts directly in the main interface.
-   - For Arabic queries, the relevant document chunks retrieved by FAISS will be listed.
-   - For English and French queries, a natural language response will be generated using the Llama model.
+      from sentence_transformers import SentenceTransformer
+      model = SentenceTransformer("all-mpnet-base-v2")
+      embeddings = model.encode(prompts_list)
 
-8. **Handle Errors (if any)**:
-   - If an error occurs during file upload or processing, the interface will display a detailed error message.
-   - Ensure that the uploaded files are in PDF format and that your question is valid and relevant.
+**2. User Interface**
+
+- Sidebar options include:
+  - Text input for entering prompts.
+  - Metric selection dropdown.
+  - Optional reference prompt input for relevance analysis.
+  - Analyze button to start processing.
+
+**3. Prompt Processing**
+
+- **Text Preprocessing**:
+  - Tokenizes text, removes punctuation and stop words using `nltk`.
+- **Embedding Generation**:
+  - Converts prompts into dense vectors using SentenceTransformer.
+
+**4. Metric Computation**
+
+- Semantic Richness:
+  - Combines Semantic Diversity Score (SDS) and Semantic Repetition Penalty (SRP).
+- Lexical Density:
+  - Measures the proportion of content words in a prompt.
+- Relevance:
+  - Combines lexical, semantic, and structural similarity scores.
+
+**5. Result Display and Export**
+
+- Results are displayed in a table and can be exported as JSON for further analysis:
+  .. code-block:: python
+
+      import pandas as pd
+      df = pd.DataFrame(results, columns=["Prompt", "Score"])
+      st.table(df)
+
+Usage
+-----
+
+**1. Enter Prompts**
+   - Input test prompts in the provided text box.
+
+**2. Select Metric**
+   - Choose a sorting metric (e.g., Semantic Vocabulary Richness, Relevance).
+
+**3. Analyze**
+   - Click the "Analyze" button to compute scores.
+
+**4. View Results**
+   - Sorted results are displayed in a table with optional download for processed data.
+
+Technical Requirements
+-----------------------
+
+- **Python Packages**:
+  - `Streamlit`
+  - `sentence-transformers`
+  - `scikit-learn`
+  - `nltk`
+  - `pandas`
+
+- **Hardware**:
+  - Recommended: GPU-enabled machine for faster embedding computation.

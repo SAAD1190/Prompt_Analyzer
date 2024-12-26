@@ -2,14 +2,14 @@ Welcome to Multi_RAG's Documentation!
 ======================================
 
 .. figure:: /Documentation/images/pilot.jpg
-   :width: 800
+   :width: 400
    :align: center
    :alt: Multi_RAG Documentation Cover
 
 --------------------------------------------------------
 
 .. figure:: /Documentation/images/app_screenshots.png
-   :width: 800
+   :width: 600
    :align: center
    :alt: Application Screenshots
 --------------------------------------------------------------
@@ -55,7 +55,7 @@ Get started now and unlock the full potential of your NLP pipelines!
    :maxdepth: 2
    :caption: Implementation
 
-   Documentation/scripts/Scope/implementation.rst
+   Documentation/scripts/Scope/guide.rst
 
 .. toctree::
    :maxdepth: 2

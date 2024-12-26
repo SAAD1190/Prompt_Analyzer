@@ -4,7 +4,7 @@ Overview
 .. figure:: /Documentation/images/intro.jpg
    :width: 700
    :align: center
-   :alt: Image explaining RAG introduction
+   :alt: Image explaining Prompt Analyzer introduction
 
 --------------------------------------------------------------
 
@@ -12,38 +12,41 @@ Overview
    :width: 800
    :align: center
    :alt: Application Screenshots
+
 --------------------------------------------------------------
 
-Retrieval-Augmented Generation (RAG) is a powerful technique combining retrieval systems and generative models to produce more accurate and context-aware outputs.
+**Prompt Analyzer** is an advanced tool designed to analyze, evaluate, and optimize prompts for natural language processing (NLP) tasks. It provides insights into prompts using a combination of semantic and syntactic metrics, empowering users to refine their NLP workflows.
 
 Highlights
 =============
 
-- **Multilingual Support**: This application supports French, Arabic, and English.
+- **Interactive Interface**: Powered by Streamlit for an intuitive user experience.
 
-- **Interactive Interfaces**: Built using frameworks like Streamlit.
+- **Comprehensive Metrics**: Evaluate prompts based on Semantic Richness, Vocabulary Richness, Relevance, Lexical Density, and more.
 
 General Pipeline
 ===================
 
-**Input Query**
----------------
+**Input Prompts**
+-----------------
 
-A user provides a natural language query (e.g., "What are the applications of quantum computing?").
+Users provide one or more natural language prompts (e.g., "Explain the applications of machine learning.").
 
-**Retrieval System**
---------------------
+**Semantic and Syntactic Analysis**
+-----------------------------------
 
-- **Query Encoder**: The input query is encoded into a dense vector using a query encoder (embedder).
-- **Knowledge Base**: A large dataset or knowledge base or corpus serving as a context is embedded into dense vectors and then stored in a database (such as chroma database)
-- **Similarity Search**: The query vector is compared with document vectors using a similarity metric (e.g., cosine similarity).
+- **Text Preprocessing**: Prompts are tokenized, and stop words and punctuation are removed for clean processing.
+- **Embedding Generation**: Each prompt is converted into dense vectors using pre-trained models (e.g., SentenceTransformer's `all-mpnet-base-v2`).
+- **Metric Computation**: Various metrics, such as Semantic Diversity Score (SDS), Semantic Repetition Penalty (SRP), Vocabulary Richness (VR), and Relevance, are computed.
 
-**Natural Language Generation**
--------------------
+**Sorting and Scoring**
+-----------------------
 
-A generative language model (e.g., GPT, llama, or BART) takes the combined input and generates a coherent, contextually relevant response.
+- Prompts are evaluated and scored based on the selected metric (e.g., Relevance, Semantic Vocabulary Richness).
+- If relevance is chosen, a reference prompt set is used to compute hybrid relevance scores.
 
 **Output**
 -------------------
 
-The final response is returned to the user, enhanced by the external knowledge retrieved from the knowledge base.
+- The final results include sorted prompts and corresponding scores, displayed in an interactive table.
+- Optional download of results in JSON format for further analysis.
