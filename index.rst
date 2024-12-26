@@ -15,7 +15,35 @@ Welcome to Multi_RAG's Documentation!
 --------------------------------------------------------------
 
 
-Welcome to the official documentation for Multi_RAG, a Retrieval-Augmented Generation (RAG) application designed for multilingual support (French, Arabic, and English). This project demonstrates the implementation of RAG models in an interactive Streamlit application, showcasing powerful capabilities for retrieval and generation.
+Welcome to the Prompt Analyzer Documentation
+=============================================
+
+**Prompt Analyzer** is a cutting-edge tool designed to analyze, sort, and optimize prompts for natural language processing (NLP) tasks. Built on a robust architecture, it combines advanced metrics like **Semantic Vocabulary Richness**, **Relevance**, and **Lexical Density** with an intuitive user interface powered by **Streamlit**.
+
+Key Features
+------------
+
+- **Multimodal Support**: Analyze and compare prompts in multiple ways.
+- **Advanced Metrics**: Evaluate semantic and syntactic quality, relevance, and richness.
+- **Customizable Analysis**: Flexible sorting and filtering options for tailored results.
+- **Powerful Backend**: Leverages embeddings from `SentenceTransformer` models like `all-mpnet-base-v2`.
+
+Audience
+--------
+
+This documentation is designed for researchers, developers, and NLP enthusiasts looking to enhance their workflows using Prompt Analyzer.
+
+Next Steps
+----------
+
+Explore the following sections to get started:
+
+- **Installation**: Learn how to set up Prompt Analyzer.
+- **User Guide**: Step-by-step instructions for using the tool.
+- **Advanced Features**: Dive into redundancy removal and hybrid relevance scoring.
+- **API Reference**: Detailed explanation of the codebase and methods.
+
+Get started now and unlock the full potential of your NLP pipelines!
 
 .. toctree::
    :maxdepth: 2
