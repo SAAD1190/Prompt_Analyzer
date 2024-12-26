@@ -138,7 +138,7 @@ class PromptAnalyzer:
 ##################################################################################################################
 
 
-    def process_prompts(self, sort_by="svr", reference_prompts=None, reverse=True, output_file="prompts_scores.json"):
+    def process_prompts(self, sort_by="Semantic Vocabulary Richness", reference_prompts=None, reverse=True, output_file="prompts_scores.json"):
         """
         Process prompts and return sorted results based on the specified metric, then save the results to a JSON file.
 
@@ -159,22 +159,22 @@ class PromptAnalyzer:
         """
         prompts = self.prompts_list  # Use the instance's prompts list
 
-        if sort_by == "vr":
+        if sort_by == "Vocabulary Richness":
             scores = self.compute_vocabulary_richness()
             results = [(prompt, score) for prompt, score in zip(prompts, scores)]
-        elif sort_by == "sr":
+        elif sort_by == "Semantic Richness":
             scores = self.compute_semantic_richness()
             results = [(prompt, score) for prompt, score in zip(prompts, scores)]
-        elif sort_by == "svr":
+        elif sort_by == "Semantic Vocabulary Richness":
             scores = self.compute_svr()
             results = [(prompt, score) for prompt, score in zip(prompts, scores)]
-        elif sort_by == "lexical_density":
+        elif sort_by == "Lexical Density":
             scores = self.lexical_density()
             results = [(prompt, score) for prompt, score in zip(prompts, scores)]
-        elif sort_by == "parse_tree_depth":
+        elif sort_by == "Parse Tree Depth":
             scores = self.parse_tree_depth()
             results = [(prompt, score) for prompt, score in zip(prompts, scores)]
-        elif sort_by == "relevance":
+        elif sort_by == "Relevance":
             if reference_prompts is None:
                 raise ValueError("Reference prompts must be provided for the relevance metric.")
             scores = self.relevance(reference_prompts)
