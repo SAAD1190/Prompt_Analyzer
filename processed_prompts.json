@@ -1,18 +1,22 @@
 [
     [
-        "How does climate change affect biodiversity and ecosystems?",
-        1.0
+        "Discuss the relationship between rising global temperatures and the loss of biodiversity, highlighting specific regions or species at risk.",
+        0.563
     ],
     [
-        "Describe the role of artificial intelligence in modern healthcare.",
-        0.882
+        "What are the main consequences of climate change on global biodiversity, and how do these changes manifest in different species?",
+        0.441
     ],
     [
-        "What are the ethical considerations of using AI in autonomous vehicles?.",
-        0.733
+        "In what ways does climate change alter ecosystems, and what are the implications for the diversity of plant and animal life?",
+        0.414
     ],
     [
-        "Explain the advantages and disadvantages of renewable energy sources.",
-        0.695
+        "Explain how climate change affects biodiversity, including examples of ecosystems that are most vulnerable.",
+        0.363
+    ],
+    [
+        "Provide an analysis of the effects of climate change on biodiversity, emphasizing both immediate and long-term impacts.",
+        0.342
     ]
 ]
