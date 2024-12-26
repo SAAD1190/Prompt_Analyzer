@@ -43,3 +43,6 @@ Ensures diversity in prompts:
 - **Complexity Analysis:** Evaluates prompts based on vocabulary richness, length, and linguistic complexity.
 
 ---
+
+### Documentation
+The full documentation is available at [Prompt Analyzer Documentation](https://prompt-analyzer.readthedocs.io).
