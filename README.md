@@ -12,7 +12,6 @@
 - [Semantic Analysis](#semantic-analysis)
 - [Similarity Reduction](#similarity-reduction)
 - [Relevance and Complexity Analysis](#relevance-and-complexity-analysis)
-
 ---
 
 ## Overview
