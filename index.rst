@@ -2,7 +2,7 @@ Welcome to the Prompt Analyzer Documentation
 =============================================
 
 .. figure:: /Documentation/images/pilot.jpg
-   :width: 300
+   :width: 200
    :align: center
    :alt: Multi_RAG Documentation Cover
 

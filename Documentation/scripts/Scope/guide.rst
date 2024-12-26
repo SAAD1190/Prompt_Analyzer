@@ -2,7 +2,7 @@ Overview
 ========================
 
 .. figure:: /Documentation/images/architecture.png
-   :width: 700
+   :width: 500
    :align: center
    :alt: Image explaining Prompt Analyzer architecture
 

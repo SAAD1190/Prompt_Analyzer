@@ -2,7 +2,7 @@ Overview
 ========================
 
 .. figure:: /Documentation/images/intro.jpg
-   :width: 700
+   :width: 500
    :align: center
    :alt: Image explaining Prompt Analyzer introduction
 
