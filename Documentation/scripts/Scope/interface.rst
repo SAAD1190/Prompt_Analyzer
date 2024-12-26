@@ -12,11 +12,11 @@ Interactive Interface Semantic Vocabulary Richness
 .. figure:: /Documentation/images/app_screenshots.png
    :width: 100%
    :align: center
-   :alt: Interface demo arabic version
+   :alt: Interface demo1
 
 Interactive Interface Test Relevance
 ========================
 .. figure:: /Documentation/images/app_screenshots1.png
    :width: 100%
    :align: center
-   :alt: Interface demo english version
+   :alt: Interface demo2
