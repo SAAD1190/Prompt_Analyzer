@@ -138,7 +138,7 @@ class PromptAnalyzer:
 ##################################################################################################################
 
 
-    def process_prompts(self, sort_by="svr", reference_prompts=None, reverse=True, output_file="processed_prompts.json"):
+    def process_prompts(self, sort_by="svr", reference_prompts=None, reverse=True, output_file="prompts_scores.json"):
         """
         Process prompts and return sorted results based on the specified metric, then save the results to a JSON file.
 
@@ -188,7 +188,6 @@ class PromptAnalyzer:
         # Write results to JSON using PromptAnalyzer's method
         self.write_to_json(sorted_results, filename=output_file)
 
-        print(f"Results saved to '{output_file}'")
         return sorted_results
 
 
@@ -296,7 +295,7 @@ class PromptAnalyzer:
     ################################################### Utilities ####################################################
     ##################################################################################################################
 
-    def write_to_json(self, results, filename="prompt_results.json"):
+    def write_to_json(self, results, filename="prompts_scores.json"):
         """
         Write results to a JSON file.
 
