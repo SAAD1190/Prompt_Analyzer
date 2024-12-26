@@ -13,11 +13,6 @@
 - [Similarity Reduction](#similarity-reduction)
 - [Relevance and Complexity Analysis](#relevance-and-complexity-analysis)
 
-> [Examples](#examples)
-
-- [Prompt Generator Example](#prompt-generator-example)
-- [Prompt Analyzer Example](#prompt-analyzer-example)
-
 ---
 
 ## Overview
